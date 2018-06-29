@@ -22,9 +22,9 @@ def diff_to_LaTeX(diff_list):
         if operation == '=':
             text_blocks += token_list
         elif operation == '-':
-            text_blocks.append(r'\textcolor{red}{%s}' % ' '.join(token_list))
+            text_blocks.append(r'\color{red}%s\normalcolor' % ' '.join(token_list))
         elif operation == '+':
-            text_blocks.append(r'\textcolor{green}{%s}' % ' '.join(token_list))
+            text_blocks.append(r'\color{green}%s\normalcolor' % ' '.join(token_list))
     return ' '.join(text_blocks)
 
 
