@@ -19,7 +19,6 @@ import latex_diff
 import latex_diff.tools
 
 import argparse
-import os
 
 
 if __name__ == '__main__':
@@ -28,13 +27,4 @@ if __name__ == '__main__':
     parser.add_argument('FILE_NEW')
     args = parser.parse_args()
 
-    with open(args.FILE_OLD) as f:
-        text_old = f.read()
-    with open(args.FILE_NEW) as f:
-        text_new = f.read()
-    # flatten the contents
-    text_old = latex_diff.tools.resolve_inputs(os.path.dirname(os.path.realpath(f.name)), text_old)
-    text_new = latex_diff.tools.resolve_inputs(os.path.dirname(os.path.realpath(f.name)), text_new)
-
-    diff = latex_diff.word_diff(text_old, text_new)
-    print(latex_diff.diff_to_LaTeX(diff))
+    print(latex_diff.latex_diff_files(args.FILE_OLD, args.FILE_NEW))

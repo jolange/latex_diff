@@ -13,5 +13,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .latex_diff import word_diff, diff_to_LaTeX
-
+from .latex_diff import latex_diff_files, word_diff, diff_to_latex
