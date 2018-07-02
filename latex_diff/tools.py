@@ -36,3 +36,25 @@ def resolve_inputs(base_path, text):
         text = text.replace(m.group(0), inc_content)
     return text
 
+
+def clean_latex(text):
+    # get rid of multiple-spaces/newlines to avoid diff noise
+    text = re.sub(' +', ' ', text)
+    text = re.sub(r'\n\s*\n', '\n\n', text)
+
+    # remove spaces in inline-math to avoid diffs starting inside
+
+    # exclude comments
+    math_texts = text.splitlines()
+    math_texts = [l for l in math_texts if not l.startswith('%')]
+    math_texts = [l for l in math_texts if r'\RCS' not in l]
+    math_texts = '\n'.join(math_texts)
+    # find all sequences enclosed by '$' (assuming $ appears only pairwisely)
+    math_texts = math_texts.split('$')[1::2]
+    replacements = []
+    for mt in math_texts:
+        mt = '$' + mt + '$'
+        mtrep = mt.replace(' ', '')
+        replacements.append((mt, mtrep))
+        text = text.replace(mt, mtrep)
+    return text, replacements

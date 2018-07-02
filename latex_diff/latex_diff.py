@@ -28,8 +28,18 @@ def latex_diff_files(fname_old, fname_new):
     text_old = tools.resolve_inputs(os.path.dirname(os.path.realpath(fname_old)), text_old)
     text_new = tools.resolve_inputs(os.path.dirname(os.path.realpath(fname_new)), text_new)
 
+    # get rid of diff noise
+    text_old, replacements_old = tools.clean_latex(text_old)
+    text_new, replacements_new = tools.clean_latex(text_new)
+
     diff = word_diff(text_old, text_new)
-    return diff_to_latex(diff)
+    ldiff = diff_to_latex(diff)
+
+    # reinsert spaces in math
+    for repl in replacements_new + replacements_new:
+        ldiff = ldiff.replace(repl[1], repl[0])
+
+    return ldiff
 
 
 def diff_to_latex(diff_list):
