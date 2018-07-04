@@ -22,8 +22,9 @@ def find_included_file(base_path, incname):
 
 
 def resolve_inputs(base_path, text):
-    # TODO repeat until finished
+    still_inputs = False
     for m in re.finditer('\\\\input\{(.*)\}', text):
+        still_inputs = True
         inc_statement, incname = m.group(0), m.group(1)
         incname = find_included_file(base_path, incname).strip()
         if not incname.endswith('.tex'):
@@ -34,6 +35,10 @@ def resolve_inputs(base_path, text):
         except FileNotFoundError:
             inc_content = '!!!input file "%s" not found!!!' % incname
         text = text.replace(m.group(0), inc_content)
+
+    if still_inputs:
+        text = resolve_inputs(base_path, text)
+
     return text
 
 
