@@ -36,7 +36,7 @@ def latex_diff_files(fname_old, fname_new):
     ldiff = diff_to_latex(diff)
 
     # reinsert spaces in math
-    for repl in replacements_new + replacements_new:
+    for repl in replacements_old + replacements_new:
         ldiff = ldiff.replace(repl[1], repl[0])
 
     return ldiff
