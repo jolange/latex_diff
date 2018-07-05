@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+# Copyright 2018 Johannes Lange
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import latex_diff
+
+import argparse
+from distutils.dir_util import copy_tree
+import os
+import subprocess as sp
+import sys
+import tempfile
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('SRC', help='LaTeX source directory in the TDR repository. E.g. "~/cms-docs/papers/TOP-XX-YYY/trunk/TOP-XX-YYY.tex" or "TOP-XX-YYY.tex"')
+    parser.add_argument('REV_OLD', help='Older SVN revision to compare (e.g. 466700)')
+    parser.add_argument('REV_NEW', help='Newer SVN revision to compare (e.g. 466702)')
+    args = parser.parse_args()
+
+    src_file = os.path.realpath(args.SRC)
+    assert(src_file.endswith('.tex'))
+    src_dir = os.path.dirname(src_file)
+    src_file = os.path.basename(src_file)
+
+    os.chdir(src_dir)
+    status = sp.check_output(['svn', 'status', '.']).decode('utf-8').strip()
+    if status:
+        print('Error: Please start with a clean directory! Status:')
+        print(status)
+        sys.exit(1)
+    else:
+        print('Directory "%s" is clean' % src_dir)
+
+    rev_old = int(args.REV_OLD)
+    rev_new = int(args.REV_NEW)
+
+    tmp_dir = tempfile.mkdtemp(prefix="tdr_tmp_")
+
+    # get the two versions
+    old_dir = os.path.join(tmp_dir, 'old_%d' % rev_old)
+    new_dir = os.path.join(tmp_dir, 'new_%d' % rev_new)
+    sp.call(['svn', 'update', '.', '-r', str(rev_old)])
+    copy_tree(src_dir, old_dir)
+    sp.call(['svn', 'update', '.', '-r', str(rev_new)])
+    copy_tree(src_dir, new_dir)
+    sp.call(['svn', 'update', '.'])
+
+    # create the version where the diff can be compiled
+    diff_dir = os.path.join(tmp_dir, 'diff')
+    copy_tree(old_dir, diff_dir)
+    copy_tree(new_dir, diff_dir)
+
+    # do the actual diff, write it to the new directory
+    ldiff = latex_diff.latex_diff_files(os.path.join(old_dir, src_file), os.path.join(new_dir, src_file))
+    with open(os.path.join(diff_dir, src_file), 'w') as f:
+        f.write(ldiff)
+
+    print('Written diff version to "%s"' % diff_dir)
+    print('Compile it there, then delete the temporary directory "%s"' % tmp_dir)
