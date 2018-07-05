@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('SRC', help='LaTeX source directory in the TDR repository. E.g. "~/cms-docs/papers/TOP-XX-YYY/trunk/TOP-XX-YYY.tex" or "TOP-XX-YYY.tex"')
     parser.add_argument('REV_OLD', help='Older SVN revision to compare (e.g. 466700)')
-    parser.add_argument('REV_NEW', help='Newer SVN revision to compare (e.g. 466702)')
+    parser.add_argument('REV_NEW', help='Newer SVN revision to compare (e.g. 466702) or HEAD for the latest revision')
     args = parser.parse_args()
 
     src_file = os.path.realpath(args.SRC)
@@ -46,17 +46,20 @@ if __name__ == '__main__':
     else:
         print('Directory "%s" is clean' % src_dir)
 
-    rev_old = int(args.REV_OLD)
-    rev_new = int(args.REV_NEW)
+    # assert that revisions are integers or HEAD
+    rev_old = str(int(args.REV_OLD))
+    rev_new = args.REV_NEW
+    if rev_new != "HEAD":
+        rev_new = str(int(rev_new))
 
     tmp_dir = tempfile.mkdtemp(prefix="tdr_tmp_")
 
     # get the two versions
-    old_dir = os.path.join(tmp_dir, 'old_%d' % rev_old)
-    new_dir = os.path.join(tmp_dir, 'new_%d' % rev_new)
-    sp.call(['svn', 'update', '.', '-r', str(rev_old)])
+    old_dir = os.path.join(tmp_dir, 'old_%s' % rev_old)
+    new_dir = os.path.join(tmp_dir, 'new_%s' % rev_new)
+    sp.call(['svn', 'update', '.', '-r', rev_old])
     copy_tree(src_dir, old_dir)
-    sp.call(['svn', 'update', '.', '-r', str(rev_new)])
+    sp.call(['svn', 'update', '.', '-r', rev_new])
     copy_tree(src_dir, new_dir)
     sp.call(['svn', 'update', '.'])
 

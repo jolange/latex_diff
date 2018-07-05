@@ -47,7 +47,8 @@ positional arguments:
   SRC         LaTeX source directory in the TDR repository. E.g. "~/cms-
               docs/papers/TOP-XX-YYY/trunk/TOP-XX-YYY.tex" or "TOP-XX-YYY.tex"
   REV_OLD     Older SVN revision to compare (e.g. 466700)
-  REV_NEW     Newer SVN revision to compare (e.g. 466702)
+  REV_NEW     Newer SVN revision to compare (e.g. 466702) or HEAD for the
+              latest revision
 
 optional arguments:
   -h, --help  show this help message and exit
