@@ -2,15 +2,19 @@ from setuptools import setup
 
 
 long_desc = """
-TODO
+Create a LaTeX-compilable diff of two LaTeX files.
+
+The main purpose is to produce diffs for documents in the CMS TDR document repository, but it can also be used for any other LaTeX document.
+
+No real LaTeX parsing is performed (and there is no intention to implement this), so the resulting diff file might contain errors that need to be fixed by hand.
 """
 
 setup(name='latex_diff',
       version='0.1dev',
-      description='TODO',
+      description='Create a LaTeX-compilable diff of two LaTeX files.',
       long_description=long_desc,
       long_description_content_type='text/markdown',
-      # url='',
+      url='https://github.com/jolange/latex_diff',
       author='Johannes Lange',
       license='GPL-3.0',
       packages=['latex_diff'],
