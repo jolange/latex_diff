@@ -32,7 +32,7 @@ positional arguments:
 optional arguments:
   -h, --help  show this help message and exit
 ```
-- example usage of the `tdr_diff` executable:
+- example usage of the `latex_diff` executable:
 ```ShellSession
 $ latex_diff example1_old.tex example1_new.tex > example1_diff.tex
 $ pdflatex example1_diff.tex
