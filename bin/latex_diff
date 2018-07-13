@@ -25,6 +25,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('FILE_OLD')
     parser.add_argument('FILE_NEW')
+    parser.add_argument('--only-body', action='store_true',
+                        help='Apply diff only to the body of the document')
     args = parser.parse_args()
 
-    print(latex_diff.latex_diff_files(args.FILE_OLD, args.FILE_NEW))
+    print(latex_diff.latex_diff_files(args.FILE_OLD, args.FILE_NEW, only_body=args.only_body))

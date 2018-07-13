@@ -16,10 +16,11 @@
 from . import tools
 
 import os
+import re
 import simplediff
 
 
-def latex_diff_files(fname_old, fname_new):
+def latex_diff_files(fname_old, fname_new, only_body=False):
     with open(fname_old) as f:
         text_old = f.read()
     with open(fname_new) as f:
@@ -27,6 +28,15 @@ def latex_diff_files(fname_old, fname_new):
     # flatten the contents
     text_old = tools.resolve_inputs(os.path.dirname(os.path.realpath(fname_old)), text_old)
     text_new = tools.resolve_inputs(os.path.dirname(os.path.realpath(fname_new)), text_new)
+
+    if only_body:
+        # extract the body
+        m = re.search(r'(.*)\\begin{document}(.*)\\end{document}(.*)', text_old, re.MULTILINE | re.DOTALL)
+        assert len(m.groups()) == 3, 'wrong document structure!'
+        pre_old, text_old, post_old = m.groups()
+        m = re.search(r'(.*)\\begin{document}(.*)\\end{document}(.*)', text_new, re.MULTILINE | re.DOTALL)
+        assert len(m.groups()) == 3, 'wrong document structure!'
+        pre_new, text_new, post_new = m.groups()
 
     # get rid of diff noise
     text_old, replacements_old = tools.clean_latex(text_old)
@@ -39,6 +49,8 @@ def latex_diff_files(fname_old, fname_new):
     for repl in replacements_old + replacements_new:
         ldiff = ldiff.replace(repl[1], repl[0])
 
+    if only_body:
+        ldiff = pre_new + ldiff + post_new
     return ldiff
 
 
