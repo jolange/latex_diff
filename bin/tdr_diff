@@ -20,6 +20,7 @@ import latex_diff
 import argparse
 from distutils.dir_util import copy_tree
 import os
+import re
 import subprocess as sp
 import sys
 import tempfile
@@ -70,6 +71,11 @@ if __name__ == '__main__':
 
     # do the actual diff, write it to the new directory
     ldiff = latex_diff.latex_diff_files(os.path.join(old_dir, src_file), os.path.join(new_dir, src_file))
+
+    # fix RCS tags
+    ldiff = re.sub(r'\\RCS\$Revision.*\$', r'\RCS$Revision: diff $', ldiff)
+    ldiff = re.sub(r'\\RCS\$Id.*\$', r'\RCS$Id: A B ????-??-?? ??:??:??Z E $ ', ldiff)
+
     with open(os.path.join(diff_dir, src_file), 'w') as f:
         f.write(ldiff)
 
