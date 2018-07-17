@@ -62,4 +62,8 @@ def clean_latex(text):
         mtrep = mt.replace(' ', '')
         replacements.append((mt, mtrep))
         text = text.replace(mt, mtrep)
+
+    text = text.replace('\n', ' %__NEWLINE__% ')
+    replacements.append(('\n', ' %__NEWLINE__% '))
+
     return text, replacements
